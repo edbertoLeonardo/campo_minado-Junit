@@ -29,8 +29,13 @@ public class Tabuleiro {
 	
 	
 	public void abrirCampo(int linha, int coluna) {
-		campos.parallelStream().filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
-		.findFirst().ifPresent(c -> c.abrir());
+		try {
+			campos.parallelStream().filter(c -> c.getLinha() == linha && c.getColuna() == coluna)
+			.findFirst().ifPresent(c -> c.abrir());
+		} catch (Exception e) {
+			campos.forEach(c -> c.setAberto(true));
+			throw e;
+		}
 		
 	}
 	
@@ -67,9 +72,9 @@ public class Tabuleiro {
 		Predicate<Campo> minado = c -> c.isMinado();
 		
 		do {
-			minasArmada = campos.stream().filter(minado).count();
 			int valorAleatorio = (int) ((Math.random() * campos.size()));
 			campos.get(valorAleatorio).minarCampo();
+			minasArmada = campos.stream().filter(minado).count();
 			
 		}while(minasArmada < minas);
 	}
@@ -88,8 +93,15 @@ public class Tabuleiro {
 	  public String toString() {
 		  StringBuilder sb = new StringBuilder();
 		  
+		  sb.append(" ");
+		  for(int i = 0; i < colunas; i++) {
+			  sb.append(" " + i + " ");
+		  }
+		  sb.append("\n");
+		  
 		  int i = 0;
 		  for (int l = 0; l < linhas; l++) {	
+			  sb.append(l);
 			  for (int c = 0; c < colunas; c++) {
 				  sb.append(" ");
 				  sb.append(campos.get(i));
